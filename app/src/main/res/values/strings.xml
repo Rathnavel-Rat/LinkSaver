@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">LinkStore</string>
+    <string name="title">Title</string>
+    <string name="save">Save</string>
+    <string name="enter_the_link">enter the Link</string>
+    <string name="paste_the_link">paste the Link</string>
+    <string name="enter_the_title">Enter the title</string>
+    <string name="close">close</string>
+</resources>

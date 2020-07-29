@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fav"
+        android:checkable="true"
+        android:clickable="true"
+        android:title="Favourites"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/date"
+        android:checkable="true"
+        android:icon="@drawable/ic_baseline_info_24"
+        android:title="Date👇" />
+    <item
+        android:id="@+id/info"
+        android:title="Info"/>
+
+    <item
+        android:id="@+id/search"
+        android:clickable="true"
+        android:focusable="true"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:imeOptions="actionSearch"
+        android:title="Search"
+        android:visible="true"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always|withText" />
+</menu>

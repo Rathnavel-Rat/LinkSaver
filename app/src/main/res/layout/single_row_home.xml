@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:backgroundTintMode="add">
+
+        <LinearLayout
+            android:id="@+id/llcontent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+                <!--The weight sum property is used to divide the layout into
+                different parts and then giving each layout a particular weight
+                gives it that amount of space on the screen-->
+
+
+                <!--Since each parent layout will have a specific weight, we need
+                not give any width to those layout-->
+
+                <TextView
+                    android:id="@+id/idSetter"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:padding="5dp"
+                    android:paddingTop="30dp"
+                    android:text="ID"
+                    android:textAlignment="center" />
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4.5">
+
+
+                        <TextView
+                            android:id="@+id/TitleFetched"
+                            android:layout_width="205dp"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Title"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/LinkFethced"
+                            android:layout_width="254dp"
+                            android:layout_height="43dp"
+                            android:layout_below="@id/TitleFetched"
+                            android:maxLines="1"
+                            android:scrollbars="none"
+                            android:text="link"
+                            android:textColor="#357a38"
+                            android:textSize="15sp" />
+
+                        <ImageView
+                            android:id="@+id/shareImage"
+                            android:layout_width="36dp"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/LinkFethced"
+                            android:src="@drawable/ic_baseline_share_24" />
+
+                </RelativeLayout>
+
+
+                <!--Many times we see that texts have an image along with them to
+                their right or left. This is added with the help of the
+                drawableLeft (or drawableRight and so on) attribute-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5">
+
+                        <ImageView
+                            android:id="@+id/favImage"
+                            android:layout_width="14dp"
+                            android:layout_height="66dp"
+                            android:layout_margin="15dp"
+                            android:layout_weight="1.2"
+                            android:drawablePadding="4dp"
+                            android:isScrollContainer="false"
+                            android:padding="4dp"
+                            android:scrollbars="none"
+                            android:src="@drawable/ic_baseline_favorite_border_24"
+                            android:text="Add" />
+
+                </LinearLayout>
+
+
+        </LinearLayout>
+
+</androidx.cardview.widget.CardView>

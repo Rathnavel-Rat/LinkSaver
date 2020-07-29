@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center">
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/titleEntry"
+            android:layout_width="396dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/enter_the_title" />
+
+        <EditText
+            android:id="@+id/linkEntry"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:scrollHorizontally="false"
+            android:ems="10"
+            android:hint="@string/paste_the_link"
+            android:inputType="text"
+            android:textIsSelectable="true" />
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/save"
+            android:text="@string/save" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/close"
+            android:layout_toRightOf="@+id/save"
+
+            android:text="@string/close" /></RelativeLayout>
+
+    </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
