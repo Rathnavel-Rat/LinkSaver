@@ -286,13 +286,13 @@ class MainActivity : AppCompatActivity() {
                     Collections.sort(copy, date)
                     recyclerAdaptor.item= copy.asReversed(); recyclerAdaptor.notifyDataSetChanged()
                     datemenu.isChecked=true
-                    Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
             }
             else{
                     Collections.sort(copy, date1)
                     recyclerAdaptor.item= copy.asReversed();recyclerAdaptor.notifyDataSetChanged()
                     datemenu.isChecked=false
-                    Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
                 }
         }
             return@setOnMenuItemClickListener true
