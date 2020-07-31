@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -23,7 +24,7 @@ public class View_Model(application: Application) :ViewModel(){
     fun saveLinkEntry(data:link){
       executorService.execute { dao.saveLink(data)}
     }
-    fun get_All():Flowable<List<link>>{
+    fun get_All():Maybe<List<link>>{
        return  dao.getAll()
     }
     fun DeleteOneItem(pk:Long){

@@ -3,6 +3,7 @@ package com.example.wallpaper.Room
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import java.util.*
 
 @Entity(tableName = "linkStore")
@@ -28,7 +29,7 @@ interface  queryDao{
     fun saveLink(Entity:link)
 
     @Query("select * from linkStore")
-    fun getAll():Flowable<List<link>>
+    fun getAll():Maybe<List<link>>
 
     @Query("DELETE from linkStore where pk=(:pk)")
     fun DeleteAnItem(pk:Long)

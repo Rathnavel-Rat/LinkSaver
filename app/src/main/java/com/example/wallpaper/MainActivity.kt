@@ -29,11 +29,16 @@ import com.example.wallpaper.Room.View_Model
 import com.example.wallpaper.Room.link
 import com.example.wallpaper.Room.view_model_facotry
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 var date = Comparator<link> { hotel1, hotel2 ->
@@ -55,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: View_Model
     lateinit var popupView: Dialog
     lateinit var recyclerView: RecyclerView
-    var copy = emptyList<link>()
+    var copy = mutableListOf<link>()
 
 
         lateinit var recyclerAdaptor: CommonAdaptor<link>
@@ -67,10 +72,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val add = findViewById<FloatingActionButton>(R.id.add)
-        viewModel = ViewModelProvider(
-            this,
-            view_model_facotry(this.application)
-        ).get(View_Model::class.java)
+        viewModel = ViewModelProvider(this, view_model_facotry(this.application)).get(View_Model::class.java)
         recyclerView = findViewById<RecyclerView>(R.id.RecyclerHome)
 
         var card = findViewById<CardView>(R.id.card)
@@ -98,25 +100,19 @@ class MainActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val id = viewHolder.itemView.findViewById<TextView>(R.id.idSetter)
                 viewModel.DeleteOneItem(id.text.toString().toLong())
+                recyclerAdaptor.deleteAnitem(viewHolder.adapterPosition)
+
             }
         }
         ItemTouchHelper(swipe).attachToRecyclerView(recyclerView)
 
-        viewModel.get_All().subscribeOn(Schedulers.io()).delay(0, TimeUnit.SECONDS)
-            .observeOn(Schedulers.newThread()).subscribe {
-            this.runOnUiThread {
-                recyclerAdaptor = CommonAdaptor<link>(
-                    R.layout.single_row_home,
-                    it,
-                    { it, card -> bindItem(it, card) },
-                    true,
-                    filter()
-                )
-                recyclerView.adapter = recyclerAdaptor
-                copy = it
-            }
-        }
-
+         val it= viewModel.get_All().subscribeOn(Schedulers.io()).observeOn(Schedulers.single()).subscribe {
+             this.runOnUiThread {
+                 recyclerAdaptor = CommonAdaptor<link>(R.layout.single_row_home, it as ArrayList<link>, { it, card -> bindItem(it, card) }, true, filter())
+                 recyclerView.adapter = recyclerAdaptor
+                 copy.addAll(it)
+             }
+         }
 
 
 
@@ -138,6 +134,7 @@ class MainActivity : AppCompatActivity() {
             val shareIntent = Intent.createChooser(sendIntent, null)
             startActivity(shareIntent)
         }
+
         this.runOnUiThread {
             id.text = item.id.toString()
             title.text = item.title
@@ -146,13 +143,15 @@ class MainActivity : AppCompatActivity() {
                 R.drawable.ic_baseline_favorite_24
             )
 
-            favourite.setOnClickListener {
-                viewModel.UpdateFavItem(item.id, !item.favourite)
-            }
             link.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
                 link.scrollTo(0, 0)
                 startActivity(intent)
+            }
+            favourite.setOnClickListener {
+                viewModel.UpdateFavItem(item.id, !item.favourite)
+                item.favourite=!item.favourite
+                recyclerAdaptor.updateAnItem(item,copy.indexOf(item))
             }
         }
     }
@@ -174,10 +173,10 @@ class MainActivity : AppCompatActivity() {
                         .isNotEmpty()
                 ) {
                     val insert = link()
-                    insert.title = title.text.toString();insert.link =
-                        linkEntry.text.toString();insert.date =
-                        Calendar.getInstance().timeInMillis;insert.favourite = false
+                    insert.title = title.text.toString();insert.link = linkEntry.text.toString();insert.date = Calendar.getInstance().timeInMillis;insert.favourite = false
                     viewModel.saveLinkEntry(insert)
+                    recyclerAdaptor.addNew(insert)
+
                     linkEntry.setText("");title.setText("")
                     popupView.dismiss()
                 } else {
@@ -224,9 +223,9 @@ class MainActivity : AppCompatActivity() {
                 filteredList.addAll(copy)
             } else {
                 val filterPattern = constraint.toString().toLowerCase(Locale.ROOT).trim()
-                for (mWords in copy) {
-                    if (mWords.title.toLowerCase(Locale.ROOT).startsWith(filterPattern)) {
-                        filteredList.add(mWords)
+                for (Words in copy) {
+                    if (Words.title.toLowerCase(Locale.ROOT).startsWith(filterPattern)) {
+                        filteredList.add(Words)
                     }
                 }
             }
@@ -236,31 +235,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            recyclerAdaptor.item = results!!.values as List<link>
-            recyclerAdaptor.notifyDataSetChanged()
+            recyclerAdaptor.addAll(results?.values as ArrayList<link>)
         }
 
     }
    //menu option select
-    @SuppressLint("CheckResult")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.fav -> {
-                if (!item.isChecked) {
-                    viewModel.getAllFavuorite(true).observeOn(Schedulers.io())
-                        .observeOn(Schedulers.newThread()).subscribe {
-                        this.runOnUiThread {
-                            recyclerAdaptor.item = it;recyclerAdaptor.notifyDataSetChanged()
-                        }
-                    }
-                    item.isChecked = true
+                 if (!item.isChecked) {
+                     val getFav= copy.filter { it.favourite  }
+                     recyclerAdaptor.addAll(getFav)
+                     item.isChecked = true
                 } else {
-                    viewModel.get_All().observeOn(Schedulers.io()).observeOn(Schedulers.newThread())
-                        .subscribe {
-                            this.runOnUiThread {
-                                recyclerAdaptor.item = it;recyclerAdaptor.notifyDataSetChanged()
-                            }
-                        };item.isChecked = false
+                   recyclerAdaptor.addAll(copy)
+                     item.isChecked=false
                 }
             }
             R.id.info->{
@@ -270,6 +259,8 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val datemenu=menu.findItem(R.id.date)
@@ -283,14 +274,12 @@ class MainActivity : AppCompatActivity() {
         datemenu.setOnMenuItemClickListener {
             this.runOnUiThread {
             if(!datemenu.isChecked){
-                    Collections.sort(copy, date)
-                    recyclerAdaptor.item= copy.asReversed(); recyclerAdaptor.notifyDataSetChanged()
+                    recyclerAdaptor.reverse(date1)
                     datemenu.isChecked=true
                     Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
             }
             else{
-                    Collections.sort(copy, date1)
-                    recyclerAdaptor.item= copy.asReversed();recyclerAdaptor.notifyDataSetChanged()
+                    recyclerAdaptor.reverse(date)
                     datemenu.isChecked=false
                     Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
                 }

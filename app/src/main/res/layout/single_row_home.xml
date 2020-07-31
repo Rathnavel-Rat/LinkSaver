@@ -51,11 +51,12 @@
                         <TextView
                             android:id="@+id/LinkFethced"
                             android:layout_width="254dp"
-                            android:layout_height="43dp"
+                            android:layout_height="wrap_content"
                             android:layout_below="@id/TitleFetched"
                             android:maxLines="1"
                             android:scrollbars="none"
                             android:text="link"
+                            android:paddingLeft="8dp"
                             android:textColor="#357a38"
                             android:textSize="15sp" />
 
