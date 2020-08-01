@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity() {
             Intent.ACTION_SEND -> {
                 if ("text/plain" == intent.type) {
                     if (URLUtil.isValidUrl(intent.getStringExtra(Intent.EXTRA_TEXT))) {
-
                         show(intent.getStringExtra(Intent.EXTRA_TEXT))
                     } else {
                         Toast.makeText(this, "Not an Url ", Toast.LENGTH_SHORT).show()
@@ -217,7 +216,6 @@ class MainActivity : AppCompatActivity() {
     private inner class filter : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val filteredList = arrayListOf<link>()
-            println("lo $constraint")
             val results = FilterResults()
             if (constraint!!.isEmpty()) {
                 filteredList.addAll(copy)
