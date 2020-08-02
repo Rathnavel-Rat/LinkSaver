@@ -4,6 +4,7 @@ import android.app.Application
 import android.view.View
 import android.widget.Filter
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.reactivex.Flowable
@@ -24,7 +25,7 @@ public class View_Model(application: Application) :ViewModel(){
     fun saveLinkEntry(data:link){
       executorService.execute { dao.saveLink(data)}
     }
-    fun get_All():Maybe<List<link>>{
+    fun get_All():LiveData<List<link>>{
        return  dao.getAll()
     }
     fun DeleteOneItem(pk:Long){

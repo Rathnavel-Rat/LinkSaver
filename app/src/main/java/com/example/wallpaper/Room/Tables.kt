@@ -29,7 +29,7 @@ interface  queryDao{
     fun saveLink(Entity:link)
 
     @Query("select * from linkStore")
-    fun getAll():Maybe<List<link>>
+    fun getAll():LiveData<List<link>>
 
     @Query("DELETE from linkStore where pk=(:pk)")
     fun DeleteAnItem(pk:Long)

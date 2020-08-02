@@ -18,6 +18,7 @@ import android.webkit.URLUtil
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -29,10 +30,6 @@ import com.example.wallpaper.Room.View_Model
 import com.example.wallpaper.Room.link
 import com.example.wallpaper.Room.view_model_facotry
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread
-import io.reactivex.rxjava3.core.Completable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -60,8 +57,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: View_Model
     lateinit var popupView: Dialog
     lateinit var recyclerView: RecyclerView
-    var copy = mutableListOf<link>()
-
+    var copy =ArrayList<link>()
 
         lateinit var recyclerAdaptor: CommonAdaptor<link>
 
@@ -85,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             Intent.ACTION_SEND -> {
                 if ("text/plain" == intent.type) {
                     if (URLUtil.isValidUrl(intent.getStringExtra(Intent.EXTRA_TEXT))) {
+
                         show(intent.getStringExtra(Intent.EXTRA_TEXT))
                     } else {
                         Toast.makeText(this, "Not an Url ", Toast.LENGTH_SHORT).show()
@@ -99,19 +96,18 @@ class MainActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val id = viewHolder.itemView.findViewById<TextView>(R.id.idSetter)
                 viewModel.DeleteOneItem(id.text.toString().toLong())
-                recyclerAdaptor.deleteAnitem(viewHolder.adapterPosition)
-
             }
         }
         ItemTouchHelper(swipe).attachToRecyclerView(recyclerView)
+        recyclerAdaptor = CommonAdaptor<link>(R.layout.single_row_home, copy , { copy, card -> bindItem(copy, card) }, false, filter())
+        recyclerView.adapter = recyclerAdaptor
 
-         val it= viewModel.get_All().subscribeOn(Schedulers.io()).observeOn(Schedulers.single()).subscribe {
-             this.runOnUiThread {
-                 recyclerAdaptor = CommonAdaptor<link>(R.layout.single_row_home, it as ArrayList<link>, { it, card -> bindItem(it, card) }, true, filter())
-                 recyclerView.adapter = recyclerAdaptor
-                 copy.addAll(it)
-             }
-         }
+        viewModel.get_All().observe(this, Observer<List<link>>{
+            this.runOnUiThread {
+                recyclerAdaptor.addAll(it)
+                copy= it as ArrayList<link>
+            }}
+        )
 
 
 
@@ -128,11 +124,7 @@ class MainActivity : AppCompatActivity() {
         val id = itemView.findViewById<TextView>(R.id.idSetter)
         val favourite = itemView.findViewById<ImageView>(R.id.favImage)
         val share=itemView.findViewById<ImageView>(R.id.shareImage)
-        share.setOnClickListener {
-            val sendIntent: Intent = Intent().apply { action = Intent.ACTION_SEND;putExtra(Intent.EXTRA_TEXT, item.link);type = "text/plain" }
-            val shareIntent = Intent.createChooser(sendIntent, null)
-            startActivity(shareIntent)
-        }
+
 
         this.runOnUiThread {
             id.text = item.id.toString()
@@ -142,6 +134,7 @@ class MainActivity : AppCompatActivity() {
                 R.drawable.ic_baseline_favorite_24
             )
 
+
             link.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
                 link.scrollTo(0, 0)
@@ -149,8 +142,11 @@ class MainActivity : AppCompatActivity() {
             }
             favourite.setOnClickListener {
                 viewModel.UpdateFavItem(item.id, !item.favourite)
-                item.favourite=!item.favourite
-                recyclerAdaptor.updateAnItem(item,copy.indexOf(item))
+            }
+            share.setOnClickListener {
+                val sendIntent: Intent = Intent().apply { action = Intent.ACTION_SEND;putExtra(Intent.EXTRA_TEXT, item.link);type = "text/plain" }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                startActivity(shareIntent)
             }
         }
     }
@@ -162,7 +158,6 @@ class MainActivity : AppCompatActivity() {
             val save = popupView.findViewById<Button>(R.id.save)
             val title = popupView.findViewById<EditText>(R.id.titleEntry)
             val linkEntry = popupView.findViewById<EditText>(R.id.linkEntry)
-            println("$stringExtra jjnj")
             if (stringExtra.isNotEmpty())
                 linkEntry.setText(stringExtra)
 
@@ -174,8 +169,6 @@ class MainActivity : AppCompatActivity() {
                     val insert = link()
                     insert.title = title.text.toString();insert.link = linkEntry.text.toString();insert.date = Calendar.getInstance().timeInMillis;insert.favourite = false
                     viewModel.saveLinkEntry(insert)
-                    recyclerAdaptor.addNew(insert)
-
                     linkEntry.setText("");title.setText("")
                     popupView.dismiss()
                 } else {
@@ -216,14 +209,15 @@ class MainActivity : AppCompatActivity() {
     private inner class filter : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val filteredList = arrayListOf<link>()
+            println("lo $constraint")
             val results = FilterResults()
             if (constraint!!.isEmpty()) {
                 filteredList.addAll(copy)
             } else {
                 val filterPattern = constraint.toString().toLowerCase(Locale.ROOT).trim()
-                for (Words in copy) {
-                    if (Words.title.toLowerCase(Locale.ROOT).startsWith(filterPattern)) {
-                        filteredList.add(Words)
+                for (mWords in copy) {
+                    if (mWords.title.toLowerCase(Locale.ROOT).startsWith(filterPattern)) {
+                        filteredList.add(mWords)
                     }
                 }
             }
@@ -233,21 +227,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            recyclerAdaptor.addAll(results?.values as ArrayList<link>)
+            recyclerAdaptor.addAll( results!!.values as List<link>)
+            recyclerAdaptor.notifyDataSetChanged()
         }
 
     }
    //menu option select
+    @SuppressLint("CheckResult")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.fav -> {
-                 if (!item.isChecked) {
-                     val getFav= copy.filter { it.favourite  }
-                     recyclerAdaptor.addAll(getFav)
-                     item.isChecked = true
+                if (!item.isChecked) {
+                    val liked=copy.filter { it.favourite }
+                    recyclerAdaptor.addAll(liked)
+                    item.isChecked = true
                 } else {
-                   recyclerAdaptor.addAll(copy)
-                     item.isChecked=false
+                    recyclerAdaptor.addAll(copy);item.isChecked = false
                 }
             }
             R.id.info->{
@@ -257,8 +252,6 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val datemenu=menu.findItem(R.id.date)
@@ -272,14 +265,15 @@ class MainActivity : AppCompatActivity() {
         datemenu.setOnMenuItemClickListener {
             this.runOnUiThread {
             if(!datemenu.isChecked){
-                    recyclerAdaptor.reverse(date1)
+                    recyclerAdaptor.reverse(date)
                     datemenu.isChecked=true
-                    Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
             }
             else{
-                    recyclerAdaptor.reverse(date)
+                    Collections.sort(copy, date1)
+                    recyclerAdaptor.reverse(date1)
                     datemenu.isChecked=false
-                    Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
                 }
         }
             return@setOnMenuItemClickListener true
