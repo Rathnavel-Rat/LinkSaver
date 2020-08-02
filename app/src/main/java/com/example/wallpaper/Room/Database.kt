@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [link::class],version = 5)
+@Database(entities = [link::class],version = 6)
 abstract  class DB:RoomDatabase(){
     abstract fun DBDao():queryDao
             companion object{

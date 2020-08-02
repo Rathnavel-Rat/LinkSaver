@@ -18,6 +18,7 @@ import android.webkit.URLUtil
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -54,8 +55,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var popupView: Dialog
     lateinit var recyclerView: RecyclerView
     var copy =ArrayList<link>()
+    lateinit var getAllData: LiveData<List<link>>
+    lateinit var favouriteData: LiveData<List<link>>
 
-        lateinit var recyclerAdaptor: CommonAdaptor<link>
+    lateinit var recyclerAdaptor: CommonAdaptor<link>
 
 
 
@@ -66,6 +69,8 @@ class MainActivity : AppCompatActivity() {
         val add = findViewById<FloatingActionButton>(R.id.add)
         viewModel = ViewModelProvider(this, view_model_facotry(this.application)).get(View_Model::class.java)
         recyclerView = findViewById<RecyclerView>(R.id.RecyclerHome)
+        favouriteData=viewModel.getFavourite()
+        getAllData= viewModel.get_All()
 
         var card = findViewById<CardView>(R.id.card)
         recyclerView.itemAnimator = null
@@ -98,13 +103,13 @@ class MainActivity : AppCompatActivity() {
         recyclerAdaptor = CommonAdaptor<link>(R.layout.single_row_home, copy , { copy, card -> bindItem(copy, card) }, false, filter())
         recyclerView.adapter = recyclerAdaptor
 
-        viewModel.get_All().observe(this, Observer<List<link>>{
+     
+        getAllData.observe(this, Observer<List<link>>{
             this.runOnUiThread {
                 recyclerAdaptor.setData(it)
                 copy= it as ArrayList<link>
             }}
         )
-
 
 
 
@@ -230,14 +235,22 @@ class MainActivity : AppCompatActivity() {
    //menu option select
     @SuppressLint("CheckResult")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
         when (item.itemId) {
             R.id.fav -> {
                 if (!item.isChecked) {
                     val liked=copy.filter { it.favourite }
-                    recyclerAdaptor.setData(liked)
+                    getAllData.removeObservers(this)
+                    favouriteData.observe(this,Observer<List<link>>{
+                        recyclerAdaptor.setData(it)
+                    })
                     item.isChecked = true
                 } else {
-                    recyclerAdaptor.setData(copy);item.isChecked = false
+                    favouriteData.removeObservers(this)
+                    getAllData.observe(this,Observer<List<link>>{
+                        recyclerAdaptor.setData(it)
+                    })
+                    item.isChecked = false
                 }
             }
             R.id.info->{

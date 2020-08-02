@@ -1,15 +1,9 @@
 package com.example.wallpaper.Room
 
 import android.app.Application
-import android.view.View
-import android.widget.Filter
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -35,9 +29,10 @@ public class View_Model(application: Application) :ViewModel(){
     {
         executorService.execute { dao.UpdateAnItem(pk,value) }
     }
-    fun getAllFavuorite(value: Boolean):Flowable<List<link>>{
-        return dao.getFavouriteItem(value)
+    fun getFavourite():LiveData<List<link>> {
+        return dao.getFavourited(i = true)
     }
+
 
 
 }

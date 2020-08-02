@@ -13,11 +13,10 @@ import kotlin.collections.ArrayList
 
 class CommonAdaptor<T>(private val layoutId:Int, var listItems:ArrayList<T>, private val bindItem: (T, View) -> Unit, val hasStableIds:Boolean=false,val filterObject:Filter):RecyclerView.Adapter<CommonAdaptor.CviewHolder<T>>(),Filterable {
     private var item:ArrayList<T> = listItems
-    var filtered_item:List<T> = listItems
 
     init{
         setHasStableIds(hasStableIds)
-}
+ }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CviewHolder<T> {
        val view=LayoutInflater.from(parent.context).inflate(layoutId,parent,false)
@@ -33,9 +32,14 @@ class CommonAdaptor<T>(private val layoutId:Int, var listItems:ArrayList<T>, pri
 
     fun setData(model: List<T>){
         val diffResult = DiffUtil.calculateDiff(DiffCallback(item,model))
-        diffResult.dispatchUpdatesTo(this)
         item.clear()
         item.addAll(model)
+        diffResult.dispatchUpdatesTo(this)
+    }
+    fun setFavData(model: List<T>){
+        item.clear()
+        item.addAll(model)
+        notifyDataSetChanged()
     }
 
 

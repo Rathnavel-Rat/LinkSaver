@@ -2,8 +2,6 @@ package com.example.wallpaper.Room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.reactivex.Flowable
-import io.reactivex.Maybe
 import java.util.*
 
 @Entity(tableName = "linkStore")
@@ -38,7 +36,9 @@ interface  queryDao{
     @Query("update linkStore set Favourites=(:value) where pk=(:pk)")
     fun UpdateAnItem(pk:Long,value:Boolean)
 
-    @Query("select * from linkStore where Favourites=:value")
-    fun getFavouriteItem(value: Boolean):Flowable<List<link>>
+    @Query("select * from linkStore where Favourites=(:i)")
+    fun getFavourited(i:Boolean):LiveData<List<link>>
+
+   
 
 }
