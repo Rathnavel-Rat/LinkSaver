@@ -30,11 +30,7 @@ import com.example.wallpaper.Room.View_Model
 import com.example.wallpaper.Room.link
 import com.example.wallpaper.Room.view_model_facotry
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import io.reactivex.schedulers.Schedulers
 import java.util.*
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
@@ -104,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.get_All().observe(this, Observer<List<link>>{
             this.runOnUiThread {
-                recyclerAdaptor.addAll(it)
+                recyclerAdaptor.setData(it)
                 copy= it as ArrayList<link>
             }}
         )
@@ -209,15 +205,14 @@ class MainActivity : AppCompatActivity() {
     private inner class filter : Filter() {
         override fun performFiltering(constraint: CharSequence?): FilterResults {
             val filteredList = arrayListOf<link>()
-            println("lo $constraint")
             val results = FilterResults()
             if (constraint!!.isEmpty()) {
                 filteredList.addAll(copy)
             } else {
                 val filterPattern = constraint.toString().toLowerCase(Locale.ROOT).trim()
-                for (mWords in copy) {
-                    if (mWords.title.toLowerCase(Locale.ROOT).startsWith(filterPattern)) {
-                        filteredList.add(mWords)
+                for (Words in copy) {
+                    if (Words.title.toLowerCase(Locale.ROOT).startsWith(filterPattern)) {
+                        filteredList.add(Words)
                     }
                 }
             }
@@ -227,7 +222,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            recyclerAdaptor.addAll( results!!.values as List<link>)
+            recyclerAdaptor.setData( results!!.values as List<link>)
             recyclerAdaptor.notifyDataSetChanged()
         }
 
@@ -239,10 +234,10 @@ class MainActivity : AppCompatActivity() {
             R.id.fav -> {
                 if (!item.isChecked) {
                     val liked=copy.filter { it.favourite }
-                    recyclerAdaptor.addAll(liked)
+                    recyclerAdaptor.setData(liked)
                     item.isChecked = true
                 } else {
-                    recyclerAdaptor.addAll(copy);item.isChecked = false
+                    recyclerAdaptor.setData(copy);item.isChecked = false
                 }
             }
             R.id.info->{
@@ -265,15 +260,16 @@ class MainActivity : AppCompatActivity() {
         datemenu.setOnMenuItemClickListener {
             this.runOnUiThread {
             if(!datemenu.isChecked){
-                    recyclerAdaptor.reverse(date)
-                    datemenu.isChecked=true
-                    Toast.makeText(this, "Oldest", Toast.LENGTH_SHORT).show()
+                Collections.sort(copy, date)
+                recyclerAdaptor.setData(copy.asReversed())
+                datemenu.isChecked=true
+                Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
             }
             else{
                     Collections.sort(copy, date1)
-                    recyclerAdaptor.reverse(date1)
+                    recyclerAdaptor.setData(copy.asReversed())
                     datemenu.isChecked=false
-                    Toast.makeText(this, "Newest", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "oldest", Toast.LENGTH_SHORT).show()
                 }
         }
             return@setOnMenuItemClickListener true

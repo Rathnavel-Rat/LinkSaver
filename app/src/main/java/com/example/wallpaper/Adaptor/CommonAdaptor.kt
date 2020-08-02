@@ -31,19 +31,14 @@ class CommonAdaptor<T>(private val layoutId:Int, var listItems:ArrayList<T>, pri
 
     }
 
-    fun addAll(model: List<T>){
+    fun setData(model: List<T>){
         val diffResult = DiffUtil.calculateDiff(DiffCallback(item,model))
         diffResult.dispatchUpdatesTo(this)
         item.clear()
         item.addAll(model)
-
     }
 
-    fun reverse(model:Comparator<T>){
-        Collections.sort(item, model)
-        item.asReversed()
-        notifyDataSetChanged()
-    }
+
 
 
     override fun getItemViewType(position: Int): Int {
