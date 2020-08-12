@@ -49,19 +49,38 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.91240877" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="305dp"
-        android:layout_height="84dp"
+    <LinearLayout
+        android:layout_width="291dp"
+        android:layout_height="85dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp"
-        android:text="@string/t2"
-        android:textColor="#FFFF"
-        android:textSize="25sp"
+        android:orientation="horizontal"
+
         app:layout_constraintBottom_toTopOf="@+id/guideline7"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
-        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+        app:layout_constraintTop_toTopOf="@+id/guideline4">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:text="@string/t2"
+            android:textColor="#FFFFFf"
+            android:textSize="25sp" />
+
+        <ImageView
+            android:layout_width="46dp"
+            android:layout_height="54dp"
+            android:src="@drawable/add" />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/t21"
+            android:textColor="#FFFFFf"
+            android:textSize="25sp" />
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline7"
@@ -77,19 +96,37 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.6148238" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="289dp"
-        android:layout_height="72dp"
+    <LinearLayout
+       android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:text="@string/t3"
-        android:textColor="#FFFF"
-        android:textSize="25sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
-        app:layout_constraintTop_toTopOf="@+id/guideline7" />
+        app:layout_constraintTop_toTopOf="@+id/guideline7" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:text="@string/t3"
+            android:textColor="#FFFFFf"
+            android:textSize="25sp" />
+
+        <ImageView
+            android:layout_width="46dp"
+            android:layout_height="54dp"
+            android:src="@drawable/share" />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/t31"
+            android:textColor="#FFFFFf"
+            android:textSize="25sp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/edi"
@@ -112,4 +149,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.77" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="250dp"
+        android:layout_height="85dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline10"
+        app:layout_constraintStart_toStartOf="@+id/guideline5"
+        app:layout_constraintTop_toTopOf="@+id/guideline9"
+        app:layout_constraintVertical_bias="0.59"
+        app:srcCompat="@drawable/deleteDemo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

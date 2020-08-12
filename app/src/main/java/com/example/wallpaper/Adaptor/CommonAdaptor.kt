@@ -36,11 +36,7 @@ class CommonAdaptor<T>(private val layoutId:Int, var listItems:ArrayList<T>, pri
         item.addAll(model)
         diffResult.dispatchUpdatesTo(this)
     }
-    fun setFavData(model: List<T>){
-        item.clear()
-        item.addAll(model)
-        notifyDataSetChanged()
-    }
+
 
 
 

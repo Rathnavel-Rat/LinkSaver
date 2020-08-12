@@ -9,7 +9,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="t1">This App allows you to store Link,Share and view it anytime</string>
-    <string name="t2"><![CDATA[—>Use Add button to add new link]]></string>
-    <string name="t3"><![CDATA[—>Use share button to share to others]]></string>
+    <string name="t2"><![CDATA[—>Use]]></string>
+    <string name="t21"><![CDATA[to add new link]]></string>
+    <string name="t3"><![CDATA[—>Use]]></string>
+    <string name="t31"><![CDATA[to share to others]]></string>
     <string name="t4"><![CDATA[—>To delete the link stored just swipe from right to left]]></string>
 </resources>
