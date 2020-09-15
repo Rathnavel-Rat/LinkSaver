@@ -7,7 +7,6 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -29,6 +28,21 @@ class CommonAdaptor<T>(private val layoutId:Int, var listItems:ArrayList<T>, pri
        return item.size
 
     }
+    fun removeAt(position: Int):T{
+        val get=item.get(position)
+
+        item.remove(get)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position,item.size)
+        return get
+    }
+    fun add(element: T, layoutPosition: Int){
+        item.add(layoutPosition,element)
+        notifyItemInserted(layoutPosition)
+        notifyItemRangeChanged(layoutPosition,item.size)
+        notifyDataSetChanged()
+    }
+
 
     fun setData(model: List<T>){
         val diffResult = DiffUtil.calculateDiff(DiffCallback(item,model))

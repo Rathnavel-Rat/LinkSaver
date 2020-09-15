@@ -34,7 +34,6 @@ public class View_Model(application: Application) :ViewModel(){
     }
 
 
-
 }
 
 public class view_model_facotry(var application: Application) :ViewModelProvider.Factory{

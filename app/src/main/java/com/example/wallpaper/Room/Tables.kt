@@ -1,5 +1,6 @@
 package com.example.wallpaper.Room
 
+import androidx.annotation.ColorLong
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import java.util.*
@@ -20,7 +21,6 @@ data class link(
     var favourite:Boolean=false
 )
 
-
 @Dao
 interface  queryDao{
     @Insert
@@ -38,6 +38,7 @@ interface  queryDao{
 
     @Query("select * from linkStore where Favourites=(:i)")
     fun getFavourited(i:Boolean):LiveData<List<link>>
+
 
    
 

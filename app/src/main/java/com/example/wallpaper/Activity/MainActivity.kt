@@ -1,4 +1,4 @@
-package com.example.wallpaper
+package com.example.wallpaper.Activity
 
 
 
@@ -27,10 +27,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wallpaper.Adaptor.CommonAdaptor
 import com.example.wallpaper.Adaptor.SwipeToDeleteCallback
+import com.example.wallpaper.R
 import com.example.wallpaper.Room.View_Model
 import com.example.wallpaper.Room.link
 import com.example.wallpaper.Room.view_model_facotry
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -67,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val add = findViewById<FloatingActionButton>(R.id.add)
+        val parentLayout = findViewById<View>(android.R.id.content)
         viewModel = ViewModelProvider(this, view_model_facotry(this.application)).get(View_Model::class.java)
         recyclerView = findViewById<RecyclerView>(R.id.RecyclerHome)
         favouriteData=viewModel.getFavourite()
@@ -91,17 +94,39 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+        recyclerAdaptor = CommonAdaptor<link>(R.layout.single_row_home, copy , { copy, card -> bindItem(copy, card) }, false, filter())
+        recyclerView.adapter = recyclerAdaptor
 
 
         val swipe = object : SwipeToDeleteCallback(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val id = viewHolder.itemView.findViewById<TextView>(R.id.idSetter)
-                viewModel.DeleteOneItem(id.text.toString().toLong())
+                val position=viewHolder.layoutPosition
+                val k= recyclerAdaptor.removeAt(position)
+                var bool=false
+
+                val snackbar: Snackbar = Snackbar.make(parentLayout, "Link is deleted", Snackbar.LENGTH_SHORT)
+                    .setAction("UNDO", View.OnClickListener {
+                        val snackbar1: Snackbar = Snackbar.make(parentLayout, "Link is restored!", Snackbar.LENGTH_SHORT)
+                        recyclerAdaptor.add(k,position)
+                        bool=true
+                        snackbar1.show()
+
+                    })
+                snackbar.addCallback(object:Snackbar.Callback(){
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if(!bool){
+                         viewModel.DeleteOneItem(id.text.toString().toLong())}
+                        super.onDismissed(transientBottomBar, event)
+                    }
+                })
+
+                snackbar.show()
+
             }
         }
         ItemTouchHelper(swipe).attachToRecyclerView(recyclerView)
-        recyclerAdaptor = CommonAdaptor<link>(R.layout.single_row_home, copy , { copy, card -> bindItem(copy, card) }, false, filter())
-        recyclerView.adapter = recyclerAdaptor
+
 
      
         getAllData.observe(this, Observer<List<link>>{
@@ -253,8 +278,9 @@ class MainActivity : AppCompatActivity() {
                     item.isChecked = false
                 }
             }
-            R.id.info->{
-                val intent=Intent(this,InfoActivity::class.java)
+            R.id.info ->{
+                val intent=Intent(this,
+                    InfoActivity::class.java)
                 startActivity(intent)
             }
         }
